@@ -1,4 +1,6 @@
+import 'package:contacts/model/contactsList.dart';
 import 'package:contacts/ui/addContactScreen.dart';
+import 'package:contacts/ui/lastteneditedscreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,6 +13,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
       title: 'Contactos',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent),
@@ -30,63 +34,122 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void addContactScreen(){
+  ContactList contacts = ContactList();
+  bool hidden = true;
+  
+  void _addContactScreen(){
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const AddContactScreen(),
+        builder: (context) => AddContactScreen(contactos: contacts,),
       ),
-    );
+    ).then((_) => setState(() {}));
+  }
+
+  void _lastTenEditedScreen(){
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LastTenEditedScreen(),
+      ),
+    ).then((_) => setState(() {}));
+  }
+
+  void _expandContacts(){
+    hidden = !hidden;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              _lastTenEditedScreen();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              foregroundColor: Colors.black,
+            ),
+            child: const Icon(Icons.account_box),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {
+              _expandContacts();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              foregroundColor: Colors.black,
+            ),
+            child: const Icon(Icons.list),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {
+              _addContactScreen();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              foregroundColor: Colors.black,
+            ),
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
       body: Stack(
         children: [
-          Center(
+          contacts.contacts.isEmpty
+          ? const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
                 Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  'Sem contactos registados',
                 ),
               ],
             ),
-          ),
-          Positioned(
-            top: 16.0,
-            right: 16.0,
-            child: Row(
-              children: [
-                FloatingActionButton(
-                  onPressed: _incrementCounter,
-                  tooltip: 'Expand contacts',
-                  child: const Icon(Icons.account_box),
-                ),
-                FloatingActionButton(
-                  onPressed: addContactScreen,
-                  tooltip: 'Add contact',
-                  child: const Icon(Icons.add),
-                ),
-              ],
+          )
+          : ListView.builder(
+              itemCount: contacts.contacts.length,
+              itemBuilder: (context, index) {
+                final contact = contacts.contacts[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Card(
+                    color: Colors.purple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading: ClipOval(
+                        child: 
+                          contact.picture,
+                      ),
+                      title: 
+                        Text(
+                          contact.nome,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      subtitle: !hidden
+                        ? Text(
+                            "Email: ${contact.email}\nAniversário: ${contact.birthdate}\nTelemóvel: ${contact.phone}", 
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          )
+                        : null,
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
         ],
       ),
     );

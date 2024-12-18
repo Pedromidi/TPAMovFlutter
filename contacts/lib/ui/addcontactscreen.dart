@@ -1,23 +1,25 @@
+import 'package:contacts/model/Contact.dart';
+import 'package:contacts/model/contactsList.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+/*import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';*/
 
-class AddContactScreen extends StatelessWidget{
-  const AddContactScreen({super.key});
+class AddContactScreen extends StatelessWidget {
+  final ContactList contactos;
+
+  const AddContactScreen({super.key, required this.contactos});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Contacts',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent),
-        useMaterial3: true,
-      ),
-      home: const ContactForm(),
-    );
+    return ContactForm(contactos: contactos);
   }
 }
 
 class ContactForm extends StatefulWidget {
-  const ContactForm({super.key});
+  final ContactList contactos;
+
+  const ContactForm({super.key, required this.contactos});
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -45,12 +47,36 @@ class _ContactFormState extends State<ContactForm> {
     }
   }
 
-  void _notifyUser(String message) {
+  /*Future<void> pickImage() async {
+  // Request permission to access the gallery
+    var status = await Permission.photos.request();
+
+    if (status.isGranted) {
+      // If permission is granted, pick an image
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        // Do something with the selected image
+        File imgFile = File(image.path);
+        //print('Image Path: ${imgFile.path}');
+      }
+    } else if (status.isDenied) {
+      // If permission is denied, you can show a dialog or a message
+      _notifyUser("Não será possivel selecionar imagens do dispositivo", "Permissão negada!");
+    } else if (status.isPermanentlyDenied) {
+      // If permission is permanently denied, open app settings
+      openAppSettings();
+    }
+  }*/
+
+
+  void _notifyUser(String message, String t) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Não foi possível guardar o contacto"),
+          title: Text(t),
           content: Text(message),
           actions: [
             TextButton(
@@ -61,6 +87,36 @@ class _ContactFormState extends State<ContactForm> {
         );
       },
     );
+  }
+
+  void _backToMain(){
+    Navigator.pop(context);
+  }
+
+  void _addContact(ContactList contacts){
+    if(_nameController.text.isEmpty){
+      _notifyUser("O parâmetro Nome é obrigatório", "Não foi possível guardar o contacto!");
+      return;
+    }
+    if(_emailController.text.isEmpty){
+      _notifyUser("O parâmetro Email é obrigatório", "Não foi possível guardar o contacto!");
+      return;
+    }
+    if(_phoneController.text.isEmpty){
+      _notifyUser("O parâmetro Telemóvel é obrigatório", "Não foi possível guardar o contacto!");
+      return;
+    }
+    if(_selectedDate == null && isAniversario){
+      _notifyUser("Aniversário selecionado mas não inserido", "Não foi possível guardar o contacto!");
+      return;
+    }
+    if(isAniversario){
+      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"));
+    }
+    else{
+      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"--/--/----"));
+    }
+    _backToMain();
   }
 
   @override
@@ -74,18 +130,7 @@ class _ContactFormState extends State<ContactForm> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              if(_nameController.text.isEmpty){
-                _notifyUser("O parâmetro Nome é obrigatório");
-              }
-              else if(_emailController.text.isEmpty){
-                _notifyUser("O parâmetro Email é obrigatório");
-              }
-              else if(_phoneController.text.isEmpty){
-                _notifyUser("O parâmetro Telemóvel é obrigatório");
-              }
-              else if(_selectedDate == null && isAniversario){
-                _notifyUser("Aniversário selecionado mas não inserido");
-              }
+              _addContact(widget.contactos);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -139,6 +184,9 @@ class _ContactFormState extends State<ContactForm> {
               const SizedBox(height: 4),
               TextField(
                 controller: _phoneController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly, //Para ter a certeza que é um numero
+                ],
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
@@ -202,39 +250,49 @@ class _ContactFormState extends State<ContactForm> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Select picture functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                      foregroundColor: Colors.black,
-                    ),
-                    child: const Column(
-                      children: [
-                        Text('Selecionar fotografia'),
-                        Icon(Icons.image),
-                      ],
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        //pickImage();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FittedBox(
+                            child: Text('Selecionar fotografia'),
+                          ),
+                          Icon(Icons.image),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Take photo functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                      foregroundColor: Colors.black,
-                    ),
-                    child: const Column(
-                      children: [
-                        Text('Tirar fotografia'),
-                        Icon(Icons.camera_alt),
-                      ],
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Take photo functionality
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FittedBox(
+                            child: Text('Tirar fotografia'),
+                          ),
+                          Icon(Icons.camera_alt),
+                        ],
+                      ),
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),

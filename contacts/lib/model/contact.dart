@@ -1,17 +1,15 @@
-class MeetingPoint{
-    double lat = 0;
-    double long = 0;
-    DateTime date = DateTime.now();
-}
+import 'package:contacts/model/meetingpoint.dart';
+import 'package:flutter/material.dart';
 
 class Contact{
     String nome = "";
     String email = "";
     int phone = 0;
-    DateTime birthdate = DateTime.now();
-    bool isbirthdate = false;
-    String picture = "";
+    String birthdate = "";
+    late Image picture = Image.asset("assets/defaultcontact.png");
     late List history;
+
+    Contact(this.nome, this.email, this.phone, this.birthdate);
 
     void addMeetingPoint(MeetingPoint mp){
         history.add(mp);
