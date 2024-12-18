@@ -1,40 +1,39 @@
 import 'dart:io';
 
 import 'package:contacts/model/Contact.dart';
-import 'package:contacts/model/contactsList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddContactScreen extends StatelessWidget {
-  final ContactList contactos;
+class EditContactScreen extends StatelessWidget {
+  final Contact contact;
 
-  const AddContactScreen({super.key, required this.contactos});
+  const EditContactScreen({super.key, required this.contact});
 
   @override
   Widget build(BuildContext context) {
-    return ContactForm(contactos: contactos);
+    return ContactForm(contact: contact);
   }
 }
 
 class ContactForm extends StatefulWidget {
-  final ContactList contactos;
+  final Contact contact;
 
-  const ContactForm({super.key, required this.contactos});
+  const ContactForm({super.key, required this.contact});
 
   @override
   State<ContactForm> createState() => _ContactFormState();
 }
 
 class _ContactFormState extends State<ContactForm> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  late final TextEditingController _nameController = TextEditingController(text: widget.contact.nome);
+  late final TextEditingController _emailController = TextEditingController(text: widget.contact.email);
+  late final TextEditingController _phoneController = TextEditingController(text: widget.contact.phone.toString());
 
-  DateTime? _selectedDate;
+  late DateTime? _selectedDate = widget.contact.birthdate;
   bool isAniversario = false;
   bool isPic = false;
-  Image pic = Image.asset("assets/defaultcontact.png");
+  late Image pic = widget.contact.picture;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -68,11 +67,7 @@ class _ContactFormState extends State<ContactForm> {
     );
   }
 
-  void _backToMain(){
-    Navigator.pop(context);
-  }
-
-  void _addContact(ContactList contacts){
+  void _addContact(Contact contact){
     if(_nameController.text.isEmpty){
       _notifyUser("O parâmetro Nome é obrigatório", "Não foi possível guardar o contacto!");
       return;
@@ -90,12 +85,15 @@ class _ContactFormState extends State<ContactForm> {
       return;
     }
     if(isAniversario){
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),_selectedDate!, pic));
+      contact.birthdate = _selectedDate!;
     }
-    else{
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),null, pic));
-    }
-    _backToMain();
+
+    contact.nome = _nameController.text;
+    contact.email = _emailController.text;
+    contact.phone = int.parse(_phoneController.text);
+    contact.picture = pic;
+    
+    Navigator.pop(context);
   }
 
   @override
@@ -103,13 +101,11 @@ class _ContactFormState extends State<ContactForm> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text(
-          'Contactos',
-        ),
+        title: Text(widget.contact.nome),
         actions: [
           ElevatedButton(
             onPressed: () {
-              _addContact(widget.contactos);
+              _addContact(widget.contact);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -117,7 +113,7 @@ class _ContactFormState extends State<ContactForm> {
             ),
             child: const Row(
               children: [
-                Text('Guardar contacto'),
+                Text('Guardar alterações'),
                 Icon(Icons.check),
               ],
             ),
@@ -171,7 +167,6 @@ class _ContactFormState extends State<ContactForm> {
                 ),
               ),
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   Switch(

@@ -8,6 +8,7 @@ LocationData _locationData = LocationData.fromMap({
   'latitude' : 40.1925,
   'longitude' : -8.4128
 });
+///
 /*
 Future<void> initLocation() async {
     _serviceEnabled = await location.serviceEnabled();

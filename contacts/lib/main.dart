@@ -1,5 +1,6 @@
 import 'package:contacts/model/contactsList.dart';
 import 'package:contacts/ui/addContactScreen.dart';
+import 'package:contacts/ui/contactoui.dart';
 import 'package:contacts/ui/lastteneditedscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -117,8 +118,15 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: contacts.contacts.length,
               itemBuilder: (context, index) {
                 final contact = contacts.contacts[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContactoUi(item: contact),
+                      ),
+                    ).then((_) => setState(() {}));
+                  },
                   child: Card(
                     color: Colors.purple,
                     shape: RoundedRectangleBorder(
@@ -141,12 +149,19 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       subtitle: !hidden
-                        ? Text(
-                            "Email: ${contact.email}\nAniversário: ${contact.birthdate}\nTelemóvel: ${contact.phone}", 
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          )
+                        ? contact.birthdate?.day != null
+                          ? Text(
+                              "Email: ${contact.email}\nAniversário: ${contact.birthdate?.day}/${contact.birthdate?.month}/${contact.birthdate?.year}\nTelemóvel: ${contact.phone}", 
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              "Email: ${contact.email}\nAniversário: --/--/----\nTelemóvel: ${contact.phone}", 
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            )
                         : null,
                     ),
                   ),
