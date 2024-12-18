@@ -9,7 +9,7 @@ class Contact{
     late Image picture = Image.asset("assets/defaultcontact.png");
     late List history;
 
-    Contact(this.nome, this.email, this.phone, this.birthdate);
+    Contact(this.nome, this.email, this.phone, this.birthdate, this.picture);
 
     void addMeetingPoint(MeetingPoint mp){
         history.add(mp);

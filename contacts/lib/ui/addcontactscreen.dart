@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:contacts/model/Contact.dart';
 import 'package:contacts/model/contactsList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 /*import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';*/
 
@@ -32,6 +35,8 @@ class _ContactFormState extends State<ContactForm> {
 
   DateTime? _selectedDate;
   bool isAniversario = false;
+  bool isPic = false;
+  Image pic = Image.asset("assets/defaultcontact.png");
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -46,30 +51,6 @@ class _ContactFormState extends State<ContactForm> {
       });
     }
   }
-
-  /*Future<void> pickImage() async {
-  // Request permission to access the gallery
-    var status = await Permission.photos.request();
-
-    if (status.isGranted) {
-      // If permission is granted, pick an image
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-      if (image != null) {
-        // Do something with the selected image
-        File imgFile = File(image.path);
-        //print('Image Path: ${imgFile.path}');
-      }
-    } else if (status.isDenied) {
-      // If permission is denied, you can show a dialog or a message
-      _notifyUser("Não será possivel selecionar imagens do dispositivo", "Permissão negada!");
-    } else if (status.isPermanentlyDenied) {
-      // If permission is permanently denied, open app settings
-      openAppSettings();
-    }
-  }*/
-
 
   void _notifyUser(String message, String t) {
     showDialog(
@@ -111,10 +92,10 @@ class _ContactFormState extends State<ContactForm> {
       return;
     }
     if(isAniversario){
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"));
+      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}", pic));
     }
     else{
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"--/--/----"));
+      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),"--/--/----", pic));
     }
     _backToMain();
   }
@@ -252,8 +233,13 @@ class _ContactFormState extends State<ContactForm> {
                 children: [
                   Flexible(
                     child: ElevatedButton(
-                      onPressed: () {
-                        //pickImage();
+                      onPressed: () async {
+                        final imgFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        if (imgFile != null) {
+                          setState(() {
+                            pic = Image.file(File(imgFile.path));
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -273,8 +259,13 @@ class _ContactFormState extends State<ContactForm> {
                   const SizedBox(width: 16),
                   Flexible(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Take photo functionality
+                      onPressed: () async {
+                        final imgFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                        if (imgFile != null) {
+                          setState(() {
+                            pic = Image.file(File(imgFile.path));
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

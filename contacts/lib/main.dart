@@ -15,12 +15,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      title: 'Contactos',
+      title: 'Contacts',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Contactos'),
+      home: const MyHomePage(title: 'Contacts'),
     );
   }
 }
@@ -126,8 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: ListTile(
                       leading: ClipOval(
-                        child: 
-                          contact.picture,
+                        child: SizedBox(
+                          width: 50, // Fixed width
+                          height: 50, // Fixed height
+                          child: contact.picture,
+                        ),
                       ),
                       title: 
                         Text(

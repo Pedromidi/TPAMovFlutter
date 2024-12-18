@@ -6,7 +6,7 @@ bool _serviceEnabled = false;
 PermissionStatus _permissionGranted = PermissionStatus.denied;
 LocationData _locationData = LocationData.fromMap({
   'latitude' : 40.1925,
-  'longitude' : -8.4128 
+  'longitude' : -8.4128
 });
 /*
 Future<void> initLocation() async {
