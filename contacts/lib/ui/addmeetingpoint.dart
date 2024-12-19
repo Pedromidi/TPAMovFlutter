@@ -58,8 +58,16 @@ class _Details extends State<_AddMeeting> {
       _notifyUser("O parâmetro Latitude não está preenchido", "Não foi possível guardar a localização!");
       return;
     }
+    if(double.parse(_latController.text)<-90 || double.parse(_latController.text)>90){
+      _notifyUser("O parâmetro Latitude tem valores fora dos parâmetros [-90, 90]", "Não foi possível guardar a localização!");
+      return;
+    }
     if(_longController.text.isEmpty){
       _notifyUser("O parâmetro Longitude não está preenchido", "Não foi possível guardar a localização!");
+      return;
+    }
+    if(double.parse(_longController.text)<-180 || double.parse(_longController.text)>180){
+      _notifyUser("O parâmetro Longitude tem valores fora dos parâmetros [-180, 180]", "Não foi possível guardar a localização!");
       return;
     }
     mapController.move(LatLng(double.parse(_latController.text), double.parse(_longController.text)), 12.0);
