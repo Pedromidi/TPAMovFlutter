@@ -53,6 +53,10 @@ class _Details extends State<_AddMeeting> {
     );
   }
 
+  void _addCurrentLocation(){
+
+  }
+
   void _addPoint(){
     if(_latController.text.isEmpty){
       _notifyUser("O parâmetro Latitude não está preenchido", "Não foi possível guardar a localização!");
@@ -85,23 +89,7 @@ class _Details extends State<_AddMeeting> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              _addPoint();
-            },
-            style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            foregroundColor: Colors.black,
-            ),
-            child: const Row(
-              children: [
-                Text('Adicionar localização'),
-                Icon(Icons.location_pin),
-              ],
-            ),
-          )
-        ],
+        title: const Text('Adicionar localização'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -135,6 +123,54 @@ class _Details extends State<_AddMeeting> {
                 ),
               ),
               const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: (){
+                        _addPoint();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FittedBox(
+                            child: Text('Adicionar Localização específica'),
+                          ),
+                          Icon(Icons.location_pin),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        //TODO - usar a biblioteca location que o stor disse
+                        _addCurrentLocation();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FittedBox(
+                            child: Text('Adicionar Localização atual'),
+                          ),
+                          Icon(Icons.location_pin),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 16),
               SizedBox(
                 height: 500,
                 child: FlutterMap(options: const MapOptions(
