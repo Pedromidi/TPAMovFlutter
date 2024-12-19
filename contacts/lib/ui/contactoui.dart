@@ -2,6 +2,8 @@ import 'package:contacts/model/Contact.dart';
 import 'package:contacts/ui/addmeetingpoint.dart';
 import 'package:contacts/ui/editcontact.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class ContactoUi extends StatelessWidget {
   final Contact item;
@@ -41,6 +43,13 @@ class _Details extends State<_ContactoUi> {
     ).then((_) => setState(() {}));
   }
 
+  final mapController = MapController();
+
+  TileLayer get openStreetMapTileLayer => TileLayer(
+    urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    userAgentPackageName: 'dev.fleaflet_map.example',
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,9 +80,17 @@ class _Details extends State<_ContactoUi> {
         ]
       ),
       body: Center(
-        child: Text(
-          "You selected: ${widget.item.nome}",
-          style: const TextStyle(fontSize: 24),
+        child: FlutterMap(options: const MapOptions(
+          initialCenter: LatLng(40.1925,-8.4128),
+          initialZoom: 10,
+          interactionOptions: InteractionOptions(flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
+        ),
+        mapController: mapController,
+        children: [
+          openStreetMapTileLayer,
+          if(widget.item.meetingpoints.isNotEmpty)
+            MarkerLayer(markers: widget.item.meetingpoints),
+        ],
         ),
       ),
     );
