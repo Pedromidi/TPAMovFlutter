@@ -1,4 +1,5 @@
 import 'package:contacts/model/Contact.dart';
+import 'package:contacts/ui/addmeetingpoint.dart';
 import 'package:contacts/ui/editcontact.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +33,14 @@ class _Details extends State<_ContactoUi> {
     ).then((_) => setState(() {}));
   }
 
+  void _addMeetingPointScreen(){
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddMeetingPointScreen(contact: widget.item,),
+      ),
+    ).then((_) => setState(() {}));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +57,16 @@ class _Details extends State<_ContactoUi> {
               foregroundColor: Colors.black,
             ),
             child: const Icon(Icons.edit),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _addMeetingPointScreen();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              foregroundColor: Colors.black,
+            ),
+            child: const Icon(Icons.add_location_alt),
           ),
         ]
       ),

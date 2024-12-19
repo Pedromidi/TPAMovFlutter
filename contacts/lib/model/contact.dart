@@ -1,5 +1,5 @@
-import 'package:contacts/model/meetingpoint.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 class Contact{
     String nome = "";
@@ -7,11 +7,11 @@ class Contact{
     int phone = 0;
     DateTime? birthdate;
     Image picture = Image.asset("assets/defaultcontact.png");
-    late List history;
+    late List<Location> meetingpoints;
 
     Contact(this.nome, this.email, this.phone, this.birthdate, this.picture);
 
-    void addMeetingPoint(MeetingPoint mp){
-        history.add(mp);
+    void addMeetingPoint(Location mp){
+        meetingpoints.add(mp);
     }
 }
