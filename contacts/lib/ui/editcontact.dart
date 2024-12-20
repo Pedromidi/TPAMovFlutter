@@ -92,7 +92,7 @@ class _ContactFormState extends State<ContactForm> {
     contact.email = _emailController.text;
     contact.phone = int.parse(_phoneController.text);
     contact.picture = pic;
-    
+
     Navigator.pop(context);
   }
 

@@ -135,8 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ListTile(
                       leading: ClipOval(
                         child: SizedBox(
-                          width: 50, // Fixed width
-                          height: 50, // Fixed height
+                          width: 50,
+                          height: 50,
                           child: contact.picture,
                         ),
                       ),
