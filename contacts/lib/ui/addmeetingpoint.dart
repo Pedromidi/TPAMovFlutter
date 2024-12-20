@@ -2,6 +2,7 @@ import 'package:contacts/model/Contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
 
 class AddMeetingPointScreen extends StatelessWidget {
@@ -28,12 +29,56 @@ class _Details extends State<_AddMeeting> {
   late final TextEditingController _latController = TextEditingController();
   late final TextEditingController _longController = TextEditingController();
 
+  Location location = Location();
+  bool _serviceEnabled=false;
+  PermissionStatus _permissionGranted = PermissionStatus.denied;
+  LocationData _locationData = LocationData.fromMap({
+    'latitude' : 40.1925,
+    'longitude' : -8.4128
+  });
+
   final mapController = MapController();
 
   TileLayer get openStreetMapTileLayer => TileLayer(
     urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     userAgentPackageName: 'dev.fleaflet_map.example',
   );
+
+  Future<void> initLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    await getLocation();
+    _latController.text = _locationData.latitude.toString();
+    _longController.text = _locationData.longitude.toString();
+    mapController.move(LatLng(double.parse(_latController.text), double.parse(_longController.text)), 12.0);
+    widget.contact.addMeetingPoint(
+      Marker(point: LatLng(double.parse(_latController.text), double.parse(_longController.text)), child: const Icon(Icons.location_pin, color: Colors.red,))
+    );
+    _notifyUser("", "Localização guardada!");
+    setState(() {});
+    return;
+  }
+
+  Future<void> getLocation() async {
+  if (!_serviceEnabled || 
+      _permissionGranted != PermissionStatus.granted) {
+    return;
+  }
+  _locationData = await location.getLocation();
+  setState(() {});
+ }
 
   void _notifyUser(String message, String t) {
     showDialog(
@@ -51,10 +96,6 @@ class _Details extends State<_AddMeeting> {
         );
       },
     );
-  }
-
-  void _addCurrentLocation(){
-
   }
 
   void _addPoint(){
@@ -139,7 +180,7 @@ class _Details extends State<_AddMeeting> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           FittedBox(
-                            child: Text('Adicionar Localização específica'),
+                            child: Text('Adicionar Localização por coordenadas'),
                           ),
                           Icon(Icons.location_pin),
                         ],
@@ -151,7 +192,7 @@ class _Details extends State<_AddMeeting> {
                     child: ElevatedButton(
                       onPressed: () async {
                         //TODO - usar a biblioteca location que o stor disse
-                        _addCurrentLocation();
+                        initLocation();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
