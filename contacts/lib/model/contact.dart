@@ -7,6 +7,7 @@ class Contact{
   String email = "";
   int phone = 0;
   DateTime? birthdate;
+  String bday = "--/--/----";
   Image picture = Image.asset("assets/defaultcontact.png");
   late List<Marker> meetingpoints = [];
 
@@ -14,6 +15,13 @@ class Contact{
 
   void addMeetingPoint(Marker mp){
       meetingpoints.add(mp);
+  }
+
+  String getBday(){
+    if (birthdate?.day != null){
+      bday = "${birthdate!.day}/${birthdate!.month}/${birthdate!.year}";
+    }
+    return bday;
   }
 
   /*Map<String, dynamic> toJson() {

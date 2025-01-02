@@ -67,6 +67,7 @@ class _Details extends State<_ContactoUi> {
             ),
             child: const Icon(Icons.edit),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             onPressed: () {
               _addMeetingPointScreen();
@@ -79,19 +80,49 @@ class _Details extends State<_ContactoUi> {
           ),
         ]
       ),
-      body: Center(
-        child: FlutterMap(options: const MapOptions(
-          initialCenter: LatLng(40.1925,-8.4128),
-          initialZoom: 10,
-          interactionOptions: InteractionOptions(flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
-        ),
-        mapController: mapController,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          openStreetMapTileLayer,
-          if(widget.item.meetingpoints.isNotEmpty)
-            MarkerLayer(markers: widget.item.meetingpoints),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: widget.item.picture,
+                ),
+                const SizedBox( width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Telemóvel: ${widget.item.phone}"),
+                    Text("Email: ${widget.item.email}"),
+                    Text("Aniversário: ${widget.item.getBday()}"),
+                  ],
+                ),
+              ] 
+            )
+          ),
+          Expanded(
+            child: FlutterMap(options: const MapOptions(
+                initialCenter: LatLng(40.1925,-8.4128),
+                initialZoom: 10,
+                interactionOptions: InteractionOptions(flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
+              ),
+              mapController: mapController,
+              children: [
+                Text("Telemóvel: ${widget.item.phone}\nEmail: ${widget.item.email}"),
+                if(widget.item.birthdate?.day != null)
+                  Text("Aniversário: ${widget.item.birthdate!.day}/${widget.item.birthdate!.month}/${widget.item.birthdate!.year}"),
+                openStreetMapTileLayer,
+                if(widget.item.meetingpoints.isNotEmpty)
+                  MarkerLayer(markers: widget.item.meetingpoints),
+              ],
+            ),
+          ),
         ],
-        ),
       ),
     );
   }

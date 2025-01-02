@@ -36,13 +36,20 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   
+  #permissões
   permission_handler: ^10.2.0
+
+  #imagem
   image_picker: ^0.8.7
+
+  #shared preferences
   shared_preferences: any
+
+  #localização e display do openstreet maps
   location: any
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

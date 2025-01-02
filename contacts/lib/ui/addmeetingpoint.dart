@@ -191,7 +191,6 @@ class _Details extends State<_AddMeeting> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () async {
-                        //TODO - usar a biblioteca location que o stor disse
                         initLocation();
                       },
                       style: ElevatedButton.styleFrom(

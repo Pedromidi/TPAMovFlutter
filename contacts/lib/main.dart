@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -149,20 +148,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       subtitle: !hidden
-                        ? contact.birthdate?.day != null
-                          ? Text(
-                              "Email: ${contact.email}\nAniversário: ${contact.birthdate?.day}/${contact.birthdate?.month}/${contact.birthdate?.year}\nTelemóvel: ${contact.phone}", 
+                        ? Text(
+                              "Email: ${contact.email}\nAniversário: ${contact.getBday()}\nTelemóvel: ${contact.phone}", 
                               style: const TextStyle(
                                 color: Colors.white,
                               ),
                             )
-                          : Text(
-                              "Email: ${contact.email}\nAniversário: --/--/----\nTelemóvel: ${contact.phone}", 
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                            )
-                        : null,
+                        :null,
                     ),
                   ),
                 );
