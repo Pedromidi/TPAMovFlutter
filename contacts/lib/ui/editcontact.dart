@@ -33,7 +33,7 @@ class _ContactFormState extends State<ContactForm> {
   late DateTime? _selectedDate = widget.contact.birthdate;
   bool isAniversario = false;
   bool isPic = false;
-  late Image pic = widget.contact.picture;
+  late String pic = widget.contact.picturePath;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -91,7 +91,7 @@ class _ContactFormState extends State<ContactForm> {
     contact.nome = _nameController.text;
     contact.email = _emailController.text;
     contact.phone = int.parse(_phoneController.text);
-    contact.picture = pic;
+    contact.picturePath = pic;
 
     Navigator.pop(context);
   }
@@ -230,7 +230,7 @@ class _ContactFormState extends State<ContactForm> {
                         final imgFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                         if (imgFile != null) {
                           setState(() {
-                            pic = Image.file(File(imgFile.path));
+                            pic = imgFile.path;
                           });
                         }
                       },
@@ -256,7 +256,7 @@ class _ContactFormState extends State<ContactForm> {
                         final imgFile = await ImagePicker().pickImage(source: ImageSource.camera);
                         if (imgFile != null) {
                           setState(() {
-                            pic = Image.file(File(imgFile.path));
+                            pic = imgFile.path;
                           });
                         }
                       },
@@ -282,7 +282,9 @@ class _ContactFormState extends State<ContactForm> {
                 child: SizedBox(
                   width: 200, // Fixed width
                   height: 200, // Fixed height
-                  child: pic,
+                  child: pic.startsWith('assets/')
+                    ? Image.asset(pic)  // Use Image.asset for assets
+                    : Image.file(File(pic)),  // Use Image.file for local files
                 ),
               )
             ],

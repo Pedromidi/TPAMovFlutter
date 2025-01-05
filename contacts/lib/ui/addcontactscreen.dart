@@ -2,25 +2,28 @@ import 'dart:io';
 
 import 'package:contacts/model/Contact.dart';
 import 'package:contacts/model/contactsList.dart';
+import 'package:contacts/model/databasehelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddContactScreen extends StatelessWidget {
   final ContactList contactos;
-
-  const AddContactScreen({super.key, required this.contactos});
+  final DatabaseHelper dbHelper;
+  
+  const AddContactScreen({super.key, required this.contactos, required this.dbHelper});
 
   @override
   Widget build(BuildContext context) {
-    return ContactForm(contactos: contactos);
+    return ContactForm(contactos: contactos, dbHelper: dbHelper);
   }
 }
 
 class ContactForm extends StatefulWidget {
   final ContactList contactos;
+  final DatabaseHelper dbHelper;
 
-  const ContactForm({super.key, required this.contactos});
+  const ContactForm({super.key, required this.contactos, required this.dbHelper});
 
   @override
   State<ContactForm> createState() => _ContactFormState();
@@ -34,7 +37,7 @@ class _ContactFormState extends State<ContactForm> {
   DateTime? _selectedDate;
   bool isAniversario = false;
   bool isPic = false;
-  Image pic = Image.asset("assets/defaultcontact.png");
+  String pic ="assets/defaultcontact.png";
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -90,13 +93,27 @@ class _ContactFormState extends State<ContactForm> {
       return;
     }
     if(isAniversario){
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),_selectedDate!, pic));
+      Contact novo = Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),_selectedDate!, pic);
+      contacts.addContact(novo);
+      saveContact(novo);
     }
     else{
-      contacts.addContact(Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),null, pic));
+      Contact novo = Contact(_nameController.text, _emailController.text, int.parse(_phoneController.text),null, pic);
+      contacts.addContact(novo);
+      saveContact(novo);
     }
     _backToMain();
   }
+
+  void saveContact(Contact contact) async {
+  int result = await widget.dbHelper.saveContact(contact);
+  if (result != 0) {
+    print("Contato salvo com sucesso!");
+  } else {
+    print("Erro ao salvar o contato.");
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +252,7 @@ class _ContactFormState extends State<ContactForm> {
                         final imgFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                         if (imgFile != null) {
                           setState(() {
-                            pic = Image.file(File(imgFile.path));
+                            pic = imgFile.path;
                           });
                         }
                       },
@@ -261,7 +278,7 @@ class _ContactFormState extends State<ContactForm> {
                         final imgFile = await ImagePicker().pickImage(source: ImageSource.camera);
                         if (imgFile != null) {
                           setState(() {
-                            pic = Image.file(File(imgFile.path));
+                            pic = imgFile.path;
                           });
                         }
                       },
@@ -283,13 +300,13 @@ class _ContactFormState extends State<ContactForm> {
                 ],
               ),
               const SizedBox(height: 16),
-              Center(
+              /*Center(
                 child: SizedBox(
                   width: 200, // Fixed width
                   height: 200, // Fixed height
-                  child: pic,
+                  //child: pic.,
                 ),
-              )
+              )*/
             ],
           ),
         ),

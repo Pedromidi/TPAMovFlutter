@@ -1,4 +1,6 @@
+import 'package:contacts/model/Contact.dart';
 import 'package:contacts/model/contactsList.dart';
+import 'package:contacts/model/databasehelper.dart';
 import 'package:contacts/ui/addContactScreen.dart';
 import 'package:contacts/ui/contactoui.dart';
 import 'package:contacts/ui/lastteneditedscreen.dart';
@@ -35,13 +37,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  DatabaseHelper dbHelper = DatabaseHelper();
   ContactList contacts = ContactList();
   bool hidden = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContacts();
+  }
+
+  Future<void> _loadContacts() async {
+    List<Contact> loadedContacts = await loadContacts();
+    setState(() {
+      contacts.contactos = loadedContacts;
+    });
+  }
+
+  Future<List<Contact>> loadContacts() async {
+    List<Contact> contacts = await dbHelper.getContacts();
+    return contacts;
+  }
   
+
   void _addContactScreen(){
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddContactScreen(contactos: contacts,),
+        builder: (context) => AddContactScreen(contactos: contacts, dbHelper: dbHelper,),
       ),
     ).then((_) => setState(() {}));
   }
@@ -136,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: SizedBox(
                           width: 50,
                           height: 50,
-                          child: contact.picture,
+                          child: contact.getImage(),
                         ),
                       ),
                       title: 

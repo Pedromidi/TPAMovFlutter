@@ -81,7 +81,7 @@ class _LastTen extends State<LastTenEditedScreen>{
                         child: SizedBox(
                           width: 50,
                           height: 50,
-                          child: contact.picture,
+                          child: contact.getImage(),
                         ),
                       ),
                       title: 

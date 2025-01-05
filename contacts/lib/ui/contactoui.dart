@@ -91,7 +91,7 @@ class _Details extends State<_ContactoUi> {
                 SizedBox(
                   width: 100,
                   height: 100,
-                  child: widget.item.picture,
+                  child: widget.item.getImage(),
                 ),
                 const SizedBox( width: 8),
                 Column(
